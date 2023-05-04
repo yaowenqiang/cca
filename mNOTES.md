@@ -69,8 +69,154 @@ Quite offten we under utilize resources, Understanding memory settings throughly
     --username root \
     --password-file filepath
 
+### List tables
+
+
+> sqoop list-tables  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+	--username root \
+	--password cloudera 
+
 ### Running queries
 
 > sqoop  eval  --connect jdbc:mysql://localhost:3306/retail_db --username root --password cloudera  --query "select * from orders limit 10"
 
 > sqoop  eval  --connect jdbc:mysql://localhost:3306/retail_db --username root --password cloudera  --query "insert into  orders values(100000000, '2023-07-25 00:00:00.0', 1000, 'CLOSED')"
+
+
+### Importing data
+
+> sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+	--username root \
+	--password cloudera \
+	--table order_items \
+	--target-dir '/user/cloudera/sqoop_import/retail_db/order_item'
+	--num-mappers 1
+
+
+>  hadoop fs -tail /user/cloudera/filepath
+
+> -m Use n map tasks to import in parallel
+
+### execution life cycle
+
+### dest parget dir if exists
+> sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+	--username root \
+	--password cloudera \
+	--table order_items \
+	--target-dir '/user/cloudera/sqoop_import/retail_db/order_item'
+	--num-mappers 1 \
+	--delete-target-dir
+	
+### append data to target dir
+
+> sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+	--username root \
+	--password cloudera \
+	--table order_items \
+	--target-dir '/user/cloudera/sqoop_import/retail_db/order_item'
+	--num-mappers 1 \
+	--append
+
+### Using split by
+> mysql> create table order_items_nopk  as select * from order_items;
+
+#### things to remember for split by
+
++ column should be indexed
++ columns in the field should be sparse
++ also often it should be sequence generated or evenly incremented
++ it should not have null values
+
+
+> sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+	--username root \
+	--password cloudera \
+	--table order_items_nopk \
+	--target-dir '/user/cloudera/sqoop_import/retail_db/order_item'
+	--split-by order_item_order_id
+
+#### split by text fieldso
+
+> sqoop import  \
+    -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table orders \
+    --warehouse-dir '/user/cloudera/sqoop_import/retail_db/' \
+    --split-by order_status \
+
+### auto reset to one mapper	
+
+>  sqoop import  \
+    -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items_nopk \
+    --warehouse-dir '/user/cloudera/sqoop_import/retail_db/' \
+    --autoreset-to-one-mapper	\
+    --delete-target-dir	
+
+### Different file formats (TODO)
+
+> --as-textfile
+> --as-avrodatafile	
+> --as-sequencefile	
+> --as-parquetfile	
+
+### Using compressions
+
+#### Compression algorithms
+
++ Gzip
++ Deflate
++ Snappy
++ Others
+
+> sqoop import  \
+    -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items_nopk \
+    --warehouse-dir '/user/cloudera/sqoop_import/retail_db/' \
+    --autoreset-to-one-mapper	\
+    --delete-target-dir	 \
+    --as-textfile \
+    --compress
+> default is gzip, and file format is .gz
+
+> hadoop fs -get /user/cloudera/sqoop_import/retail_db/order_items_nopk  order_items_nopk
+> gunzip part*.gz
+
+
+
+> sqoop import  \
+    -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items_nopk \
+    --warehouse-dir '/user/cloudera/sqoop_import/retail_db/' \
+    --autoreset-to-one-mapper	\
+    --delete-target-dir	 \
+    --as-textfile \
+    --compress
+    --compression-codec org.apache.hadoop.io.compress.SnappyCodec
+
+> file format is .snappy
+
+#### hadoop codec config 
+> /etc/hadoop/conf/core-set.xml
+> io.compression.codec
+
+
+
+
