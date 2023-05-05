@@ -274,3 +274,29 @@ group by o.order_id, o.order_date, o.order_customer_id, o.order_status
 ### Delimiters 
 ### Handling nulls
 
+>     sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --target-dir '/user/cloudera/sqoop_import/retail_db/order_item' \
+    --delete-target-dir	 \
+    --num-mappers 2 \
+    --null-non-string -1 \
+    --fields-terminated-by "\t"
+    --line-terminated-by ":"
+
+> search for sqoop ascii null delimiter
+
+>     sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --target-dir '/user/cloudera/sqoop_import/retail_db/order_item' \
+    --delete-target-dir	 \
+    --num-mappers 2 \
+    --null-non-string -1 \
+    --fields-terminated-by "\000"
+    --line-terminated-by ":"
+
