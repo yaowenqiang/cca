@@ -217,6 +217,60 @@ Quite offten we under utilize resources, Understanding memory settings throughly
 > /etc/hadoop/conf/core-set.xml
 > io.compression.codec
 
+### Boundary Query
+
+>    sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --target-dir '/user/cloudera/sqoop_import/retail_db/order_item' \
+    --delete-target-dir	 \
+    --boundary-query "select min(order_item_id), max(order_item_id) from order_items where order_item_id >=999999"
+
+>   sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --target-dir '/user/cloudera/sqoop_import/retail_db/order_item' \
+    --delete-target-dir	 \
+    --boundary-query "select 1000000,1100000"
+
+### Transformations and filtering
+
+> Table and/or columns is mutually exclusive with query
+> for query split-by is mandatory if num-mappers is greater then 1
+> query should have a placehoulder \$CONDITIONS
+
+>   sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --target-dir '/user/cloudera/sqoop_import/retail_db/order_item' \
+    --delete-target-dir	 \
+    --num-mappers 2 \
+    --columns order_item_order_id,order_item_id,order_item_subtotal
 
 
+> select o.*, sum(oi.order_item_subtotal) order_revenu 
+from orders o join order_items oi
+on o.order_id = oi.order_item_order_id
+group by o.order_id, o.order_date, o.order_customer_id, o.order_status
+
+#### Using filters
+
+>     sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --target-dir '/user/cloudera/sqoop_import/retail_db/order_item' \
+    --delete-target-dir	 \
+    --split-by order_id \
+    --query 'select o.*, sum(oi.order_item_subtotal) order_revenu from orders o join order_items oi on o.order_id = oi.order_item_order_id and $CONDITIONS group by o.order_id, o.order_date, o.order_customer_id, o.order_status '
+
+
+### Delimiters 
+### Handling nulls
 
