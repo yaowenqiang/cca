@@ -300,3 +300,19 @@ group by o.order_id, o.order_date, o.order_customer_id, o.order_status
     --fields-terminated-by "\000"
     --line-terminated-by ":"
 
+### Simple Hive Import
+
+>   sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --delete-target-dir	 \
+    --hive-import \
+    --hive-database cloudera_sqoop_import \
+    --hive-table order_items \
+    --num-mappers 2
+
+
+
+### Managing tables while performing Hive import
