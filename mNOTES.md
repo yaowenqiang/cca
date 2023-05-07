@@ -299,6 +299,7 @@ group by o.order_id, o.order_date, o.order_customer_id, o.order_status
     --null-non-string -1 \
     --fields-terminated-by "\000"
     --line-terminated-by ":"
+### Incremental Loads
 
 ### Simple Hive Import
 
@@ -314,5 +315,158 @@ group by o.order_id, o.order_date, o.order_customer_id, o.order_status
     --num-mappers 2
 
 
-
 ### Managing tables while performing Hive import
+
+#### overwrite table 
+
+>   sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --delete-target-dir	 \
+    --hive-import \
+    --hive-database cloudera_sqoop_import \
+    --hive-table order_items \
+    --hive-overwrite \
+    --num-mappers 2
+
+#### faile if table exists
+
+>    sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --delete-target-dir	 \
+    --hive-import \
+    --hive-database cloudera_sqoop_import \
+    --hive-table order_items \
+    --hive-overwrite \
+    --create-hive-table \
+    --num-mappers 2
+
+> files will be put into hdfs  /user/user/username/table_name/ dir , if import into the table successfully, the dir above will be deleted
+
+
+>     sqoop import  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --table order_items \
+    --hive-import \
+    --hive-database cloudera_sqoop_import \
+    --hive-table order_items \
+    --hive-overwrite \
+    --num-mappers 2
+
+This will be fail because the target dir hdfs://quickstart.cloudera:8020/user/cloudera/order_items already exists 
+
+### Import all tables
+
++ import-all-tables
++ Limitations
+  + --warehouse-dir is mandatory
+  + Better to use auto-reset-to-one-mappe
+  + Cannot specify many arguments such as --query --cols, --where
+  + Incremental import is not possible
+
+
+>     sqoop import-all-tables  \
+    --connect jdbc:mysql://localhost:3306/retail_db \
+    --username root \
+    --password cloudera \
+    --autoreset-to-one-mapper
+
+The command above only import all tables into /user/cloudera/tablename dir
+
+
+### Sqoop export
+
+Typeical life Cycle
+
++ Data ingesting (using Sqoop - one of the approaches)
++ Process data
++ Visualize the processed data
+  + Connect BI/Visualization tools to HDFS directly
+  + Port the processed data into a database
++ sqoop export will help you in porting the process data to a database
+
+
+run in hive
+
+> create table daily_reverue as
+    select order_date, sum(order_item_subtotal) daily_reverue
+    from orders join order_items on
+    order_id = order_item_order_id
+    where order_date like '2013-07%'
+    group by order_date
+
+run in mysql
+
+create database retail_export;
+use retail_export;
+
+create table daily_revenue (
+	order_date varchar(30),
+	revenue float
+);
+
+
+
+>     sqoop export  \
+    --connect jdbc:mysql://localhost:3306/retail_export \
+    --username root \
+    --password cloudera \
+	--table daily_revenue \
+	--input-fields-terminated-by '\001' \
+	--num-maps 1
+	--export-dir hdfs://quickstart.cloudera:8020/user/hive/warehouse/cloudera_sqoop_import.db/daily_reverue
+
+
+### Export Behavior
+### Column Mapping
+
+
+
+create table daily_revenue_demo (
+	revenue float,
+	order_date varchar(30),
+	description varchar(255)
+);
+
+
+    sqoop export  \
+    --connect jdbc:mysql://localhost:3306/retail_export \
+    --username root \
+    --password cloudera \
+    --columns order_date,revenue \
+	--table daily_revenue_demo \
+	--export-dir hdfs://quickstart.cloudera:8020/user/hive/warehouse/cloudera_sqoop_import.db/daily_reverue \
+	--input-fields-terminated-by '\001' 
+
+if a column in the mysql table is not null and not specified in the hive table ,the export will fail
+
+
+### Update and Upsert(TODO)
+
+### Stage Tables
+
+create table daily_revenue_stage (
+	order_date varchar(30) primary key,
+	revenue float
+);
+
+    sqoop export  \
+    --connect jdbc:mysql://localhost:3306/retail_export \
+    --username root \
+    --password cloudera \
+	--table daily_revenue \
+	--staging-table daily_revenue_stage \
+	--clean-staging-table \
+	--export-dir hdfs://quickstart.cloudera:8020/user/hive/warehouse/cloudera_sqoop_import.db/daily_reverue \
+	--input-fields-terminated-by '\001' 
+
+
+> if the export is successed, the stage table will be truncated.
+
