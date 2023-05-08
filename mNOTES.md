@@ -1,3 +1,6 @@
+# CCA 175
+
+
 > https://labs.itversity.com
 > brew install coursier/formulas/coursier && cs setup
 > https://www.cloudera.com/about/training/certification/cdhhdp-certification/cca-spark.html
@@ -469,4 +472,25 @@ create table daily_revenue_stage (
 
 
 > if the export is successed, the stage table will be truncated.
+
+## Transform, Stage and Store
+### Install spark on windows
+
+### Documentations
+
+> search for spark programming guide 1.6.3
+
+> https://spark.apache.org/docs/1.6.3/programming-guide.html
+
+### Initializing the job
+
+> spark-shell --master yarn --conf spark.ui.port=12654
+
+scala > sc
+scala > sqlContext
+
+spark-shell = scala + spark dependencies + implicit variables sc and sqlContext
+
+
+
 
