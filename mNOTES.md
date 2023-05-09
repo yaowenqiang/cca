@@ -492,5 +492,40 @@ scala > sqlContext
 spark-shell = scala + spark dependencies + implicit variables sc and sqlContext
 
 
+> spark-shell --master yarn --conf spark.ui.port=12654 
+
+default  value config
+
+> /etc/spark/conf/spark-defaults.conf
+> /etc/spark/conf/spark-env.sh
+
+
+
+spark-shell --master yarn  \
+	--conf spark.ui.port=12654 \
+   --num-executors 1 \
+   --executor-memory 512M
+
+
+sc.stop
+import  org.apache.spark.{SparkConf, SpartContext}
+val config = new SparkConf().setAppName("daily Revernue").setMaster("yarn-client
+val sc = new SparkContext(conf)
+sc.getConf.getAll.foreach(println)
+> sc.getConf.getAll.foreach(println)
+
+### Create RDD using data from HDFS
+
++ RRD (Relilient Distribute Dataset)
+  + in-memory
+  + Distributed
+  + Resilient
++ Reading files from HDFS
++ Reading files from local file system and create RDD
++ Quick overview of Transformations and Actions
++ DAG and lazy evaluation
++ Previewing the data using Actions
+
+scala > val l = (1 to 1000).toList
 
 
