@@ -528,4 +528,11 @@ sc.getConf.getAll.foreach(println)
 
 scala > val l = (1 to 1000).toList
 
-
+scala > val orders = sc.textFile('/public/retail-db/orders')
+scala > others.first()
+scala > others.take(10)
+scala > val productRaw = scala.io.Source.fromFile("/data/retail_db/productes/part-0000").getLines.toList
+scala > val productRDD = sc.parallelize(productRaw)
+scala > productRDD.take(10)
+scala > val l_rdd = sc.parallelize(l)
+scala > 
