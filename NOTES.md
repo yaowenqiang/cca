@@ -535,4 +535,13 @@ scala > val productRaw = scala.io.Source.fromFile("/data/retail_db/productes/par
 scala > val productRDD = sc.parallelize(productRaw)
 scala > productRDD.take(10)
 scala > val l_rdd = sc.parallelize(l)
-scala > 
+scala > l = (1 to 20000).toList
+
+> DAG (Directed Acyclic Graph)
+
+> orders.takeSample(true, 100)
+> orders.takeSample(true, 100).foreach(println)
+> orders.collect
+> orders.takeOrders
+
+
