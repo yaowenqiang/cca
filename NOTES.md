@@ -544,4 +544,14 @@ scala > l = (1 to 20000).toList
 > orders.collect
 > orders.takeOrders
 
+### Standard Transformations
+
++ Filtering(horizontal and vertical)
++ String Manipulation(Scala)
++ Row level transformation
++ Joins
++ Aggregation
++ Sorting
++ Ranking
++ Set Operations
 
