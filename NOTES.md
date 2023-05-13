@@ -555,3 +555,8 @@ scala > l = (1 to 20000).toList
 + Ranking
 + Set Operations
 
+#### String Manipulation(Scala)
+> val s = orders.first
+> val a = str.split(",")
+> a(0)
+> val orderId = a()).toInt
