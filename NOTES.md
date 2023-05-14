@@ -560,3 +560,47 @@ scala > l = (1 to 20000).toList
 > val a = str.split(",")
 > a(0)
 > val orderId = a()).toInt
+> a(1).contains("2023")
+> valorderDate = a(1)
+> orerDate.substring(0, 10)
+> orerDate.replace('-', '/')
+> orerDate.replace("07", "July')
+> orerDate.indexOf("07")
+> orerDate.indexOf("07", 2)
+> orerDate.length
+> orerDate.isEmpty
+
+### Row level transformations
+
+> str.split(',')(1).substring(0, 10).replace("-", "").toInt
+
+val orderDates = orders.map((str: String) =>  {
+    str.split(',')(1).substring(0, 10).replace("-", "").toInt
+})
+orderDates.take(10).foraech(println)
+
+    val ordersPairedRDD = orders.map(order => {
+        val o = order.split(",")
+            (o(0).toInt, o(1).substring(0, 10).replace("-","").toInt)
+
+            })
+
+
+
+val orderItems = sc.textFile("/user/cloudera/retail_db/order_items/")
+val orderItemsPairedRDD = orderItems.map(orderItem => {
+    (orderItem.split(",")(1).toInt, orderItem)
+})
+
+// flatmap
+
+val l = List("Hello", "How are you doing", "Let us perform word count","As part of the word count program", "We will see how many items each word repeat")
+val l_rdd = sc.parallelize(l)
+val l_map = l_rdd.map(ele => ele.split(" "))
+val l_flatmap = l_rdd.flatMap(ele => ele.split(" "))
+
+val wordCount = l_flatmap.map(word => (word, 1)).countByKey
+
+### filtering (horizontal and vertical) (TODO)
+
+### Joins
