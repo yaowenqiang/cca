@@ -604,3 +604,34 @@ val wordCount = l_flatmap.map(word => (word, 1)).countByKey
 ### filtering (horizontal and vertical) (TODO)
 
 ### Joins
+
+
+val orderItems = sc.textFile("/user/cloudera/retail_db/order_items/")
+
+
+val ordersMap = orders.map(order => {
+    (order.split(",")(0).toInt, order.split(",")(1).substring(0, 10))
+
+        })
+
+val orderItemsMap = orderItems.map(orderItem => {
+    val oi = orderItem.split(",")
+        (oi(1).toInt, oi(4).toFloat)
+
+        })
+
+val ordersJoin = ordersMap.join(orderItemsMap)
+
+
+//Get all the orders which do not have corresponding entries in order items
+
+val ordersMap = orders.map(order => {
+    (order.split(",")(0).toInt, order)
+})
+
+val orderItemsMap = orderItems.map(orderItem => {
+val oi = orderItem.split(",")
+    (oi(1).toInt, oi)
+})
+
+val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
