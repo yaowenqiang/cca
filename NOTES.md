@@ -635,3 +635,8 @@ val oi = orderItem.split(",")
 })
 
 val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
+
+val ordersLeftOuterJoinFilter = ordersJoin.filter(order => order._2._2 == None)
+val ordersWithNoOrderItem = ordersLeftOuterJoinFilter.map(order => order._2._1)
+
+
