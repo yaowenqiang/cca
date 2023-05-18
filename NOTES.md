@@ -639,4 +639,17 @@ val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
 val ordersLeftOuterJoinFilter = ordersJoin.filter(order => order._2._2 == None)
 val ordersWithNoOrderItem = ordersLeftOuterJoinFilter.map(order => order._2._1)
 
+#### Aggregation - using actions
 
+> orders.map(order => (order.split(',')(3), "")).countByKey.foreach(println)
+
+ orderItemsRevenue.reduce((total, revenue) => total + revenue)
+
+val  maxOrderItemsRevenue   = orderItemsRevenue.reduce((max, revenue) =>  {
+    if (max < revenue)  revenue else  max
+})
+
+
+#### groupByKey
+### reduceByKey
+### AggregateByKey
