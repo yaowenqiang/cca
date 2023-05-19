@@ -651,5 +651,10 @@ val  maxOrderItemsRevenue   = orderItemsRevenue.reduce((max, revenue) =>  {
 
 
 #### groupByKey
+
+val orderItemsMap = orderItems.map(oi => (oi.split(',')(1).toInt, oi.split(',')(4).toFloat))
+val orderItemGroupByKey = orderItemsMap.groupByKey
+orderItemsMap.groupByKey.map(rec => rec._2.toList.sum).collect.foreach(println)
+
 ### reduceByKey
 ### AggregateByKey
