@@ -656,5 +656,21 @@ val orderItemsMap = orderItems.map(oi => (oi.split(',')(1).toInt, oi.split(',')(
 val orderItemGroupByKey = orderItemsMap.groupByKey
 orderItemsMap.groupByKey.map(rec => rec._2.toList.sum).collect.foreach(println)
 
+
+val orderItemGBK = orderItemsMap.groupByKey
+val ordersSortedByRevenue = orderItemGBK.flatMap(rec => {
+    rec._2.toList.sortBy(o => -o).map(k => (rec._1, k))
+
+        })
+
+
 ### reduceByKey
+
+val revenueRecOrderId = orderItemsMap.
+    reduceByKey((total, revenue) => total + revenue)
+
+    val minRevenueRecOrderId = orderItemsMap.
+        reduceByKey((min, revenue) => if (min > revenue) revenue else min)
+
+
 ### AggregateByKey
